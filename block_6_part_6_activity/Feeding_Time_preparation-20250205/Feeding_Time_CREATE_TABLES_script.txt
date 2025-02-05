@@ -1,0 +1,144 @@
+
+
+
+
+-----------------------------------
+--   TABLE CREATION feeding time
+-----------------------------------
+-- Note: each CREATE TABLE statement is preceeded by a comment
+--       that gives a short version of table name and attribute names.
+--
+
+-- Note: the keyword DEFFERABLE is used in TRANSACTION MANAGEMENT (covered
+--       in Block 2, Part 7, Section 7 - this allows specified constraints
+--       to be checked at the end of a transaction. This simplifies the
+--       entry of large amounts of data in the presence of foreign keys (used
+--       in the script: Feeding_time_POPULATE_small_tables_script.txt).
+--
+
+
+-- location(locationcode, name, area, covered, hardstand)
+CREATE TABLE location (
+   locationcode LocCodes, 
+   PRIMARY KEY(locationcode),
+   name LocNames,
+   area  AreaDomain,
+   covered YesNo,
+   hardstand  YesNo,
+   UNIQUE(name)
+   );
+
+
+-- staffmember(employeeID, name)
+CREATE TABLE staffmember (
+   employeeID EmpIDs, 
+   PRIMARY KEY (employeeID),
+   name PersonNames
+   );
+
+
+-- feedstuff( feedcode, description, calorificvalue, preparation, storecode)
+CREATE TABLE feedstuff (
+   feedcode  FeedCodes,
+   PRIMARY KEY(feedcode),
+   description FreeText,
+   calorificvalue CalVal,
+   preparation  FreeText,
+   storecode StoreCodes
+   );
+ 
+
+-- animalbreed(breed, description, lifespan, averageheight, averageweight, notes)
+CREATE TABLE animalbreed (
+   breed BreedNames, 
+   PRIMARY KEY(breed),
+   commonname FreeText,
+   lifespan Lifespans,
+   averageheight AnimalHeights,
+   averageweight AnimalWeights,
+   notes FreeText  
+   );
+
+-- animal(IDTagCode, knownas, DoB, dateacquired, weight, height, notes) 
+CREATE TABLE animal (
+   idtagcode Tags, 
+   PRIMARY KEY(idtagcode),
+   knownas  AnimalNames,
+   dateofbirth DATE   CHECK(  (dateofbirth <= CURRENT_DATE) AND (dateofbirth >'1960-01-01') ),
+   dateacquired DATE  CHECK(  (dateacquired <= CURRENT_DATE) AND (dateacquired >'2002-05-31') ), 
+   weight AnimalWeights,
+   height AnimalHeights,
+   notes FreeText,
+
+   CONSTRAINT dateofbirthbeforedateacquired CHECK ((dateofbirth IS NULL) OR (dateofbirth <= dateacquired) ),
+
+   breed BreedNames NOT NULL,
+   CONSTRAINT classifies FOREIGN KEY (breed) REFERENCES animalbreed(breed) DEFERRABLE
+   );
+
+
+-- feedingsession( date, time, locationcode, duration, weather)
+CREATE TABLE feedingsession (
+   date   DATE,
+   time   TIME,
+   locationcode   LocCodes,
+   PRIMARY KEY (date, time, locationcode),
+
+   employeeID EmpIDs NOT NULL,
+   duration  TimePeriod,
+   weather   WeatherDesc,
+
+   CONSTRAINT feeding_session_is_historic CHECK(  (date <= CURRENT_DATE) AND (date >'2002-05-31') ),
+
+   CONSTRAINT occurs_at FOREIGN KEY (locationcode) REFERENCES location(locationcode) DEFERRABLE,
+   CONSTRAINT supervises FOREIGN KEY (employeeID) REFERENCES staffmember(employeeID) DEFERRABLE 
+
+-- COMMENT - WARNING The mandatory participation of FeedingSession in Serving has not been implemented.
+--  This omission will permit an entry in feedingsession that does not have a matching serving entry.
+--  This constraint requires a subquery in the CHECK constraint.  
+--   CONSTRAINT FeedingSessionMandatoryIn Serving 
+--            CHECK ( (date, time, locationcode) IN (SELECT date, time, locationcode FROM serving) ),
+
+-- COMMENT - WARNING The mandatory participation of FeedingSession in Feeds has not been implemented.
+--  This omission will permit an entry in feedingsession that does not have a matching feeds entry.
+--  This constraint requires a subquery in the CHECK constraint.
+--   CONSTRAINT FeedingSessionMandatoryInFeeds 
+--            CHECK ( (date, time, locationcode) IN (SELECT date, time, locationcode FROM feeds ),
+   );
+
+
+--------------------------------------------
+
+-- serving(date, time, location, feedcode, quantity)
+CREATE TABLE serving (
+   date   DATE,
+   time   TIME,
+   locationcode   LocCodes,
+   feedcode  FeedCodes,
+   PRIMARY KEY(date, time, locationcode, feedcode),
+   
+   quantity   INTEGER CHECK ( (quantity >0) AND (quantity <=50) ),
+
+   CONSTRAINT serves FOREIGN KEY (date, time, locationcode) 
+            REFERENCES feedingsession(date, time, locationcode) DEFERRABLE,
+   CONSTRAINT contains FOREIGN KEY (feedcode) REFERENCES feedstuff(feedcode) DEFERRABLE
+   );
+
+-- feeds(date, time, location, IDtagcode)
+CREATE TABLE feeds (
+   date   DATE,
+   time   TIME,
+   locationcode   LocCodes,
+   idtagcode Tags,
+   PRIMARY KEY(date, time, locationcode, idtagcode),
+
+   CONSTRAINT feeds1 FOREIGN KEY (idtagcode) 
+                     REFERENCES animal(idtagcode) DEFERRABLE,
+   CONSTRAINT feeds2 FOREIGN KEY (date, time, locationcode) 
+                     REFERENCES feedingsession(date, time, locationcode) DEFERRABLE
+
+   );
+
+
+
+

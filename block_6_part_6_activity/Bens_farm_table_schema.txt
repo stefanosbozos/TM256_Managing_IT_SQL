@@ -1,0 +1,70 @@
+-- Create table Location
+CREATE TABLE location(
+	locationcode LocCodes,
+	PRIMARY KEY (locationcode),
+	name LocNames,
+	area AreaDomain,
+	covered YesNo,
+	hardstand YesNo,
+	UNIQUE(name) -- name has a general constraint
+	);
+
+CREATE TABLE feedingsession(
+	date DATE,
+	time TIME,
+	locationcode LocCodes,
+	PRIMARY KEY (date, time, locationcode),
+	duration TimePeriod,
+	weather WeatherDesc,
+	-- relationship OccursAt, mandatory participation
+	CONSTRAINT occurs_at FOREIGN KEY (locationcode) REFERENCES location,
+	-- FeedingSession is a historic record, not referencing a date in the future, or before records began
+	CONSTRAINT session_date_is_historic CHECK ((date <= CURRENT_DATE) AND (date >= '2002-05-31'))
+	);
+
+
+-- Create the Staffmember relation
+CREATE TABLE staffmember (
+	employeeID EmpIDs,
+	PRIMARY KEY (employeeID),
+	name PersonNames
+);
+
+-- We need to create the animalbreed relation before animal
+CREATE TABLE animalbreed(
+	breed BreedNames,
+	PRIMARY KEY (breed),
+	commonname FreeText,
+	lifespan Lifespans,
+	averageheight AnimalHeights,
+	averageweight AnimalWeights,
+	notes FreeText
+);
+
+-- Creating the animal relation
+CREATE TABLE animal (
+	idtagcode Tags,
+	PRIMARY KEY(idtagcode),
+	knownas AnimalNames,
+	dateofbirth DATE,
+	dateacquired DATE,
+	weight AnimalWeights,
+	height AnimalHeights,
+	notes FreeText,
+	breed BreedNames NOT NULL,
+	-- relation Classifies mandatory participation
+	CONSTRAINT classifies FOREIGN KEY (breed) REFERENCES animalbreed
+);
+
+-- Creating Relation Feeds
+CREATE TABLE feeds(
+	date DATE,
+	time TIME,
+	locationcode LocCodes,
+	idtagcode Tags,
+	PRIMARY KEY(date, time, locationcode, idtagcode),
+	-- relation Feeds, Animal
+	CONSTRAINT feeds1 FOREIGN KEY (idtagcode) REFERENCES animal
+	-- foreign key to feeding session not declared yet
+);
+

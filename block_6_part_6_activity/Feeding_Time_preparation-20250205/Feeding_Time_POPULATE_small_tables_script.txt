@@ -1,0 +1,197 @@
+
+
+--------------------------------------------
+-- Data Insertion
+--------------------------------------------
+
+
+-- use this script when connected to the
+-- database BensFarm as user FarmAdmin
+
+-- it will remove any data in the database,
+-- and then repopulate the small tables 
+-- with the initial dataset installed for TM254.
+
+-- Note: there are additional scripts to repopulate
+-- the feeding_sessions, feeds and serving tables.
+
+
+---------------------------------------------
+-- Remove all data from existing tables
+---------------------------------------------
+-- Note the transaction, START - COMMIT, combined with the
+-- SET CONSTRAINTS ALL DEFERRED, and the individual
+-- DEFERRABLE constraints in the CREATE TABLE statements,
+-- ensures that the primary and foreign key constraints are 
+-- not checked until all the DELETE statements
+-- have completed.   
+-- This avoids the need to remove data in an order that 
+-- preserves foreign key constraints.
+
+
+START TRANSACTION;
+SET CONSTRAINTS ALL DEFERRED;
+DELETE FROM feeds;
+DELETE FROM staffmember;
+DELETE FROM feedstuff;
+DELETE FROM location;
+DELETE FROM animalbreed;
+DELETE FROM animal;
+DELETE FROM serving;
+DELETE FROM feedingsession;
+COMMIT;
+
+
+---------------------------------------------------
+-- Insert the original TM254 BensFarm data set
+---------------------------------------------------
+
+---------------------------------------------
+-- Note the transaction START END, combined with the
+-- SET CONSTRAINTS ALL DEFERRED, and the individual
+-- DEFERRABLE consstraints in the CREATE TABLE statements,
+-- ensures that the primary and foreign key constraints are 
+-- not checked until all the INSERT statements
+-- have completed.   
+-- This avoids the need to insert data in an specific order 
+-- that preserves foreign key constraints.
+
+
+START TRANSACTION;
+SET CONSTRAINTS ALL DEFERRED;
+
+INSERT INTO staffmember VALUES ('12345','Freddie');
+INSERT INTO staffmember VALUES ('12346','Kylie');
+INSERT INTO staffmember VALUES ('22325','Jennie');
+INSERT INTO staffmember VALUES ('44563','Mika');
+INSERT INTO staffmember VALUES ('37432','Dominic');
+INSERT INTO staffmember VALUES ('54612','Idil');
+INSERT INTO staffmember VALUES ('67794','Chinami');
+INSERT INTO staffmember VALUES ('25684','Lisa');
+INSERT INTO staffmember VALUES ('36745','Eric');
+INSERT INTO staffmember VALUES ('43256','Selestino');
+INSERT INTO staffmember VALUES ('64895','Freddie');
+
+
+
+INSERT INTO feedstuff VALUES ('123456','Pasture Grass',2629,'Winter-cut it first','F123');
+INSERT INTO feedstuff VALUES ('123624','Phalaris',2390,'Winter-crushed','F124');
+INSERT INTO feedstuff VALUES ('123526','Safflower Seeds',3107,'Ducks ONLY!','S145');
+INSERT INTO feedstuff VALUES ('123235','Linseed',3107,'Pig additive','S123');
+INSERT INTO feedstuff VALUES ('121563','Peanuts, hulled',3346,'Ensure dry before use','S323');
+INSERT INTO feedstuff VALUES ('125364','Hay-Ryegrass',2390,'Ensure dry','B156');
+INSERT INTO feedstuff VALUES ('123746','Barley Straw',1673,'Clear old straw before spreading','B143');
+INSERT INTO feedstuff VALUES ('123345','Grass Silage',2390,'','B135');
+INSERT INTO feedstuff VALUES ('122238','Barley Bran',2868,'Always mix well','B353');
+INSERT INTO feedstuff VALUES ('122233','Oat Bran',2124,'Use sparingly','B354');
+INSERT INTO feedstuff VALUES ('122234','Wheat Bran',2390,'','B355');
+INSERT INTO feedstuff VALUES ('124444','Barley',3107,'Always mix','B356');
+INSERT INTO feedstuff VALUES ('123678','Maize',3585,'Use sparingly','B357');
+INSERT INTO feedstuff VALUES ('123956','Oats',2868,'Cut it first','B358');
+
+
+
+
+INSERT INTO location VALUES ('PA123','Long Paddock',310, 'No','Yes');
+INSERT INTO location VALUES ('PA124','Short Paddock',220, 'No','No');
+INSERT INTO location VALUES ('SH001','Feeding Shed',112, 'Yes','Yes');
+INSERT INTO location VALUES ('SH002','Shed',101, 'Yes','Yes');
+INSERT INTO location VALUES ('BA832','Duck Barn',200, 'Yes','No');
+INSERT INTO location VALUES ('BA992','Donkey Barn',250, 'Yes','No');
+INSERT INTO location VALUES ('RU111','Long Field',600, 'No','Yes');
+INSERT INTO location VALUES ('RU112','Open Paddock',130, 'No','Yes');
+INSERT INTO location VALUES ('BA112','Play Barn',300, 'Yes','Yes');
+INSERT INTO location VALUES ('BA113','Open Barn',180, 'Yes','Yes');
+INSERT INTO location VALUES ('PA234','Wide Paddock',130, 'No','Yes');
+INSERT INTO location VALUES ('PA235','Steep Paddock',100, 'No','Yes');
+
+
+
+INSERT INTO animalbreed VALUES ('Fainting','Goat', 11, 55, 68, 'Docile, meat');
+INSERT INTO animalbreed VALUES ('Golden Guernsey', 'Goat', 16, 30, 88,'Pure bred, dairy High fat milk. Good yield.  Friendly.');
+INSERT INTO animalbreed VALUES ('San Clemente','Goat', 18, 65, 45, 'Wiry agile, meat Subject to parasite problems.');
+INSERT INTO animalbreed VALUES ('Spanish','Goat', 20, NULL, 50, 'Rugged, meat, very active');
+
+
+INSERT INTO animalbreed VALUES ('Poltou','Donkey', 25, 147, 385,  'Shaggy coated, french breed, Docile, watch during hot weather.');
+INSERT INTO animalbreed VALUES ('American Jackstock','Donkey', 30, 145, 521, 'Large, friendly, Ensure covered area available in rain.');
+
+
+INSERT INTO animalbreed VALUES ('Aylesbury','Duck', 8, NULL, 4, 'Meat, needs pool, Traditional meat producer');
+INSERT INTO animalbreed VALUES ('Orpington','Duck', 10, NULL, 3, 'Meat, Eggs, docile, Tall stance');
+INSERT INTO animalbreed VALUES ('Magpie','Duck', 12, NULL, 3, 'Meat, Eggs, Good foraging, Can be aggressive');
+INSERT INTO animalbreed VALUES ('Rouen','Duck', 7, NULL, 4, 'Meat, needs pool, Good table bird');
+INSERT INTO animalbreed VALUES ('Welsh Harlequin','Duck', 10, NULL, 3, 'Meat, Eggs, Often used for dog herding trials');
+
+
+INSERT INTO animalbreed VALUES ('Tamworth','Pig', 13, 58, 251, 'Athletic Breed, long lean body, Litter 6-10');
+INSERT INTO animalbreed VALUES ('Gloucestershire Old Spots', 'Pig', 8, 58, 227, 'Orchard pigs, Litter 10+');
+INSERT INTO animalbreed VALUES ('Large Black','Pig', 7, 55, 295, 'Hardy, big litters 10+ normal');
+
+
+INSERT INTO animalbreed VALUES ('Old English Game','Chicken', 15, NULL, 3, 'Show bird, Capable of long flights, can be agressive');
+INSERT INTO animalbreed VALUES ('Leghorn','Chicken', 5, NULL, 3, 'Eggs, Hardy, known for low feed and high egg count');
+INSERT INTO animalbreed VALUES ('Faverolle','Chicken', 6, NULL, 3, 'Eggs, Can be prone to frostbite, winter egg production');
+INSERT INTO animalbreed VALUES ('Australorp','Chicken', 8, NULL, 4, 'Eggs, Meat, fast growing');
+INSERT INTO animalbreed VALUES ('Blue Andalusian','Chicken', 9, NULL, 3, 'Eggs, favours free-range, robust. Mendel used this breed in his genetics experiments.');
+
+
+INSERT INTO animalbreed VALUES ('Oxford','Sheep', 11, 72, 108, 'Meat, A Large breed');
+INSERT INTO animalbreed VALUES ('Cotswold','Sheep', 12, 73, 66, 'Meat, long wool coats');
+INSERT INTO animalbreed VALUES ('Gulf Coast','Sheep', 8, 70, 66, 'Meat, horned');
+INSERT INTO animalbreed VALUES ('Black Welsh Mountain','Sheep', 11, 63, 52, 'Wool, tend to wander, forgetful of lambs');
+
+
+INSERT INTO animalbreed VALUES ('Standard Bronze','Turkey', 11, 60, 14, 'Meat, large, impressive show bird, hard to perfect colouring');
+INSERT INTO animalbreed VALUES ('White Holland','Turkey', 8, 45, 13, 'Meat, easily prepared');
+
+
+INSERT INTO animalbreed VALUES ('Guernsey','Cow', 18, 120, 815, 'Dairy, high protein milk');
+INSERT INTO animalbreed VALUES ('Highland','Cow', 20, 110, 725, 'Beef, shaggy long-horned, high quality beef');
+INSERT INTO animalbreed VALUES ('Belted Galloway','Cow', 18, 120, 634, 'Beef, long-haired, efficient grazers, not good in warm climates');
+INSERT INTO animalbreed VALUES ('Devon','Cow', 18, 110, 770, 'Beef, hardy and efficient grass production');
+INSERT INTO animalbreed VALUES ('Texas Longhorn','Cow', 23, 180, 453, 'Beef, range cattle, long lived');
+
+
+
+INSERT INTO animal VALUES ('123B46C16', 'Daisy' ,'2006-11-11', '2006-11-11', 10, 55, 'Almost perfect colouration', 'Standard Bronze');
+INSERT INTO animal VALUES ('123B46C47', 'Bill' ,'2006-11-11', '2006-11-11', 15, 68, 'Careful handling required', 'Standard Bronze');
+INSERT INTO animal VALUES ('123B46C87', 'Ben' ,'2016-10-11', '2016-10-11', 11, 54, 'Colouration good', 'Standard Bronze');
+INSERT INTO animal VALUES ('123B46C67', 'Pandy' ,'2008-06-12', '2012-05-15', 12, 50, NULL, 'Standard Bronze');
+
+INSERT INTO animal VALUES ('123B15X07', 'Ghost' ,'2016-01-21', '2016-01-21', 13, 44, 'Likes high roosting spots', 'White Holland');
+INSERT INTO animal VALUES ('123B15X14', 'Hugo' ,'2015-11-23', '2015-11-23', 16, 48, NULL, 'White Holland');
+INSERT INTO animal VALUES ('123B15X22', 'Winston' ,'2016-12-12', '2016-12-12', 11, 35, NULL, 'White Holland');
+
+INSERT INTO animal VALUES ('123B66X22', 'Malo' ,NULL, '2008-12-11', 801, 120, 'Tends to bite', 'Guernsey');
+INSERT INTO animal VALUES ('123B64X12', 'Peter' ,NULL, '2008-12-11', 620, 103, NULL, 'Guernsey');
+
+INSERT INTO animal VALUES ('123B45X27', 'Chuck' ,'1996-09-13', '2003-07-21', 702, 107, 'CHECK HOOVES REGULARLY', 'Devon');
+INSERT INTO animal VALUES ('123B46X27', 'Sneezy' ,'2004-07-11', '2015-08-11', 500, 90, NULL, 'Devon');
+INSERT INTO animal VALUES ('123B45X17', 'Bashful' ,'2010-03-21', '2015-08-11', 711, 102, NULL, 'Devon');
+
+INSERT INTO animal VALUES ('123K12X12', 'Winston' ,'2010-02-05', '2010-02-05', 5, NULL,  NULL, 'Old English Game');
+INSERT INTO animal VALUES ('123K12C32', 'Boadicea' ,'2011-02-17', '2011-02-17', 5, NULL,  NULL, 'Old English Game');
+INSERT INTO animal VALUES ('123B12C13', 'Darwin' ,'2010-02-22', '2010-02-22', 4, NULL,  NULL, 'Old English Game');
+INSERT INTO animal VALUES ('123K12C15', 'Newton' ,'2010-02-21', '2010-02-21', 2, NULL,  NULL, 'Old English Game');
+INSERT INTO animal VALUES ('123B12X19', 'Brunel' ,'2014-07-11', '2014-07-11', 2, NULL, NULL, 'Old English Game');
+INSERT INTO animal VALUES ('123B12X21', 'Alfred' ,'2014-05-11', '2014-05-11', 2, NULL, 'Usually avoids other birds', 'Old English Game');
+
+INSERT INTO animal VALUES ('123B98X32', 'Bonapart' ,'2016-05-18', '2016-05-18', 3, NULL, Null, 'Faverolle');
+INSERT INTO animal VALUES ('123B98X23', 'Hugo' ,'2016-05-18', '2016-05-18', 3, NULL, 'Showy with crowds', 'Faverolle');
+INSERT INTO animal VALUES ('123B98C35', 'Descartes' ,'2016-05-18', '2016-05-18',  3, NULL,'Broody', 'Faverolle');
+INSERT INTO animal VALUES ('123B98C34', 'Jean Paul' ,'2015-04-14', '2015-04-14',  4, NULL,NULL, 'Faverolle');
+INSERT INTO animal VALUES ('123K99X67', 'Jules Verne' ,'2015-04-14', '2015-04-14',  4, NULL,'Likes trying to fly', 'Faverolle');
+INSERT INTO animal VALUES ('123K88C67', 'Gustave' ,'2015-04-14', '2015-04-14',  3, NULL,'Like high roosts', 'Faverolle');
+
+
+INSERT INTO animal VALUES ('123K22X32', 'Paul' ,'2009-08-22', '2009-08-22', 4, NULL, NULL, 'Australorp');
+INSERT INTO animal VALUES ('123K22X42', 'Charlene' ,'2009-08-23', '2009-08-23', 4, NULL, NULL, 'Australorp');
+INSERT INTO animal VALUES ('123K22C24', 'Sky' ,'2010-08-22', '2010-08-22',  3, NULL,NULL, 'Australorp');
+INSERT INTO animal VALUES ('123K22C23', 'Shane' ,'2010-08-21', '2010-08-21', 3,NULL,  NULL, 'Australorp');
+
+
+COMMIT;
+
+
+

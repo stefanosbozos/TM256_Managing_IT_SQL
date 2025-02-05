@@ -1,0 +1,80 @@
+
+
+/* :::::::::::::::::::::::::::::::::::::::::: */
+/* :::            TM254 Databases         ::: */
+/* :::     User farmadmin creation        ::: */
+/* :::	   User reception creation        ::: */ 
+/* :::                                    ::: */
+/* :::     bensfarm database - install    ::: */
+/* :::       feedingtime Schema - creation::: */
+/* :::             PostgreSQL(2018)       ::: */
+/* :::::::::::::::::::::::::::::::::::::::::: */
+
+
+/* Initially connect to the DBMS as postgresql (superuser)  */
+/* run this script, then run the                            */
+/* FeedingTime_POPULATE_database_PostgreSQL script          */
+/* as user farmadmin                                        */
+
+
+
+/* create user account for farmadmin */
+DROP USER IF EXISTS farmadmin;
+CREATE USER farmadmin LOGIN PASSWORD 'TM254';
+
+/* create user account for reception */
+DROP USER IF EXISTS reception;
+CREATE USER reception LOGIN PASSWORD 'TM254';
+
+/* Note:  User accounts give access to all the databases on that */
+/* server, unless priviliges are revoked. */
+
+
+/* create BensFarm database */
+DROP DATABASE IF EXISTS bensfarm;
+CREATE DATABASE bensfarm;
+
+/* ensure farmadmin can access bensfarm database */
+GRANT ALL ON DATABASE bensfarm TO farmadmin;
+
+ 
+/* to create schema in bensfarm you need to connect to bensfarm */
+
+
+/* psql command to connect  */
+\connect bensfarm
+
+/* create FeedingTime schema in study BensFarm database, */
+/* give ownership of the schema to user farmAdmin */
+DROP SCHEMA IF EXISTS feedingtime;
+CREATE SCHEMA feedingtime AUTHORIZATION farmadmin;
+
+/* include feedingtime in farmadmin schema search_path  */
+ALTER ROLE farmadmin IN DATABASE bensfarm SET search_path TO feedingtime, public;
+
+
+/*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
+/*  At this point in the script we have created:                           */
+/*  2 users - farmadmin and reception                                      */
+/*  A database - bensfarm                                                  */
+/*  A schema - feedingtime - in the bensfarm database, owned by farmadmin. */
+/*                                                                         */
+/*  We have granted all rights in the bensfarm database to farmadmin       */
+/*  and changed the search path for farmadmin on bensfarm to include       */
+/*  the feedingtime Schema and public.                                     */
+/* ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
+
+
+/*::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+/* Now connect to the bensfarm database as USER farmadmin                             */
+/* and in sequence run the Feeding_Time_DOMAINS_script.txt,                           */
+/*                     the Feeding_Time_CREATE_TABLES_script.txt,                     */
+/*                     the Feeding_Time_POPULATE_small_tables_script.txt,             */
+/*                     the Feeding_Time_POPULATE_feeding_sessions_script.txt,         */
+/*		       the Feeding_Time_POPULATE_feeds_script.txt,                    */
+/*                     the Feeding_Time_POPULATE_serving_script.txt                   */
+/* This will create the feeding_time scenario shown at the end of the Activity in     */
+/* Block 2, Part 6, and populate the tables with sample data.                         */ 
+/* It will be used to explore SQL in Block 2, Part 7 and 8 SQL covered in the module. */
+/*::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+

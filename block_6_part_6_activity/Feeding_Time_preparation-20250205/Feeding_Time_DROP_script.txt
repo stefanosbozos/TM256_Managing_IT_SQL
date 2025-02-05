@@ -1,0 +1,71 @@
+--  The feeding time DROP script
+
+--  This script will remove the tables and domains defined
+--  for the feeding time scenario, and the additional views
+--  created during Part 8 activities. It will not remove any
+--  additional tables or views defined after the initial creation 
+--  or after completing the Part 8 Activities.
+
+--  Before running this script
+--  connect to the database bensfarm
+--                  as user farmadmin
+--            with password TM254 
+--  then run this script.
+
+
+
+------------------------------------------------------
+-- The following will report if a VIEW doesn't exist. 
+-- If it does exist it will drop it.
+
+DROP VIEW IF EXISTS farmegglayer;
+DROP VIEW IF EXISTS winterfeed;
+DROP VIEW IF EXISTS howmanybymonth;
+DROP VIEW IF EXISTS devonfeedingsessions;
+DROP VIEW IF EXISTS feedduration;
+DROP VIEW IF EXISTS overweight;
+DROP VIEW IF EXISTS feedstuffused;
+
+
+------------------------------------------------------
+-- The following will report if a TABLE doesn't exist. 
+-- If it does exist it will drop it, so losing all data within
+-- each table.
+
+DROP TABLE IF EXISTS feeds;
+DROP TABLE IF EXISTS serving;
+DROP TABLE IF EXISTS feedingsession;
+DROP TABLE IF EXISTS animal;
+DROP TABLE IF EXISTS animalbreed;
+DROP TABLE IF EXISTS location;
+DROP TABLE IF EXISTS feedstuff;
+DROP TABLE IF EXISTS staffmember;
+
+------------------------------------------------------
+-- THe following will report if a DOMAIN doesn't exist, 
+-- and will drop the DOMAIN if it does.
+
+DROP DOMAIN IF EXISTS Tags;
+DROP DOMAIN IF EXISTS EmpIDs;
+DROP DOMAIN IF EXISTS PersonNames;
+DROP DOMAIN IF EXISTS BreedNames;
+DROP DOMAIN IF EXISTS AnimalNames;
+DROP DOMAIN IF EXISTS FreeText;
+DROP DOMAIN IF EXISTS Lifespans;
+DROP DOMAIN IF EXISTS AnimalWeights;
+DROP DOMAIN IF EXISTS LocCodes;
+DROP DOMAIN IF EXISTS AnimalHeights;
+DROP DOMAIN IF EXISTS TimePeriod;
+DROP DOMAIN IF EXISTS WeatherDesc;
+DROP DOMAIN IF EXISTS LocNames;
+DROP DOMAIN IF EXISTS AreaDomain;
+DROP DOMAIN IF EXISTS YesNo;
+DROP DOMAIN IF EXISTS FeedCodes;
+DROP DOMAIN IF EXISTS StoreCodes;
+DROP DOMAIN IF EXISTS CalVal;
+DROP DOMAIN IF EXISTS FeedQuantities;
+
+-----------------------------------------------------
+
+
+

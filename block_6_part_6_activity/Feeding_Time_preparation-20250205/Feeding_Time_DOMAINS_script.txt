@@ -1,0 +1,163 @@
+
+
+----------------------------------
+--  DOMAIN creation 
+----------------------------------
+--
+-- The feeding time scenario domains are defined.
+
+--
+--     There are two versions of some domains defined. Some SQL 
+--     dialects have problems with long check constraint definitions.  
+--     So, an equivalent using a string pattern matching (regular expression) 
+--     approach follows the more traditional string processing definition 
+--     of the domain.
+-- 
+
+CREATE DOMAIN Tags AS CHAR(9)
+CHECK( 
+(LENGTH(VALUE) = 9) AND 
+(SUBSTRING(VALUE,1,1) IN ('0','1','2','3','4','5','6','7','8','9')) AND 
+(SUBSTRING(VALUE,2,1) IN ('0','1','2','3','4','5','6','7','8','9')) AND 
+(SUBSTRING(VALUE,3,1) IN ('0','1','2','3','4','5','6','7','8','9')) AND 
+(SUBSTRING(VALUE,4,1) IN ('B','K')) AND 
+(SUBSTRING(VALUE,5,1) IN ('0','1','2','3','4','5','6','7','8','9')) AND 
+(SUBSTRING(VALUE,6,1) IN ('0','1','2','3','4','5','6','7','8','9')) AND 
+(SUBSTRING(VALUE,7,1) IN ('C','X')) AND 
+(SUBSTRING(VALUE,8,1) IN ('0','1','2','3','4','5','6','7','8','9')) AND 
+(SUBSTRING(VALUE,9,1) IN ('0','1','2','3','4','5','6','7','8','9'))
+);
+--  or using regular expression pattern matching
+
+-- CREATE DOMAIN Tags AS CHAR(9)
+-- CHECK( 
+-- 	VALUE ~ '^\d{3}[BK]\d{2}[CX]\d{2}$'
+-- 	);
+
+
+CREATE DOMAIN EmpIDs AS CHAR(5)
+CHECK(
+(NOT VALUE = '00000') AND 
+(LENGTH(VALUE) = 5) AND 
+(SUBSTRING(VALUE,1,1) IN ('0','1','2','3','4','5','6','7','8','9')) AND 
+(SUBSTRING(VALUE,2,1) IN ('0','1','2','3','4','5','6','7','8','9')) AND 
+(SUBSTRING(VALUE,3,1) IN ('0','1','2','3','4','5','6','7','8','9')) AND 
+(SUBSTRING(VALUE,4,1) IN 
+('0','1','2','3','4','5','6','7','8','9')) AND
+(SUBSTRING(VALUE,5,1) IN ('0','1','2','3','4','5','6','7','8','9'))
+);
+-- or using regular expression pattern matching
+-- CREATE DOMAIN EmpIDs AS CHAR(5)
+-- CHECK (
+-- 	VALUE ~ '^\d{5}$' 
+--	);
+
+
+CREATE DOMAIN PersonNames AS VARCHAR(60)
+CHECK (VALUE <> '');
+
+
+CREATE DOMAIN BreedNames AS VARCHAR(60)
+CHECK (VALUE <> '');
+
+
+CREATE DOMAIN AnimalNames AS VARCHAR(60)
+CHECK (VALUE <> '');
+
+
+CREATE DOMAIN FreeText AS VARCHAR(200);
+
+
+CREATE DOMAIN Lifespans AS INT
+CHECK(VALUE >=0 AND VALUE <=140);
+
+
+CREATE DOMAIN AnimalWeights AS INT
+CHECK(VALUE >0 AND VALUE <=1000);
+
+
+CREATE DOMAIN AnimalHeights AS INT
+CHECK(VALUE >9 AND VALUE <=500);
+
+
+CREATE DOMAIN LocCodes AS CHAR(5)
+CHECK( 
+(LENGTH(VALUE) = 5) AND 
+(SUBSTRING(VALUE,1,2) IN ('BA','PA','SH','RU')) AND 
+(SUBSTRING(VALUE,3,1) IN ('0','1','2','3','4','5','6','7','8','9')) AND 
+(SUBSTRING(VALUE,4,1) IN ('0','1','2','3','4','5','6','7','8','9')) AND 
+(SUBSTRING(VALUE,5,1) IN ('0','1','2','3','4','5','6','7','8','9'))
+);
+--  or using regular expression pattern matching
+-- CREATE DOMAIN LocCodes AS CHAR(5)
+--    CHECK( 
+--           VALUE ~ '^(BA|PA|SH|RU)\d{3}$' 
+--          ); 
+
+
+CREATE DOMAIN TimePeriod AS INT
+CHECK(VALUE >0 AND VALUE <=90);
+
+
+CREATE DOMAIN WeatherDesc AS VARCHAR(8)
+CHECK( 
+(VALUE = 'Sunny') OR 
+(VALUE = 'Cloudy') OR 
+(VALUE = 'Raining')  
+);
+
+
+CREATE DOMAIN LocNames AS VARCHAR(30)
+CHECK(VALUE <> '');
+
+
+CREATE DOMAIN AreaDomain AS INT
+CHECK(VALUE >0 AND VALUE <=1500);
+
+
+CREATE DOMAIN YesNo AS VARCHAR(3)
+CHECK( (VALUE = 'Yes') OR (VALUE = 'No'));
+
+
+CREATE DOMAIN FeedCodes AS CHAR(6)
+CHECK( 
+(LENGTH(VALUE) = 6) AND 
+(SUBSTRING(VALUE,1,1) IN ('0','1','2','3','4','5','6','7','8','9')) AND 
+(SUBSTRING(VALUE,2,1) IN ('0','1','2','3','4','5','6','7','8','9')) AND 
+(SUBSTRING(VALUE,3,1) IN ('0','1','2','3','4','5','6','7','8','9')) AND 
+(SUBSTRING(VALUE,4,1) IN 
+('0','1','2','3','4','5','6','7','8','9')) AND
+(SUBSTRING(VALUE,5,1) IN ('0','1','2','3','4','5','6','7','8','9')) AND 
+(SUBSTRING(VALUE,6,1) IN ('0','1','2','3','4','5','6','7','8','9'))
+);
+--  or using regular expression pattern matching
+-- CREATE DOMAIN FeedCodes AS CHAR(6)
+-- CHECK (
+-- 	   VALUE ~ '^\d{6}$' 
+-- 	 );
+
+
+CREATE DOMAIN StoreCodes AS CHAR(4)
+CHECK( 
+(LENGTH(VALUE) = 4) AND 
+(SUBSTRING(VALUE,1,1) IN ('F','S','B')) AND 
+(SUBSTRING(VALUE,2,1) IN ('0','1','2','3','4','5','6','7','8','9')) AND 
+(SUBSTRING(VALUE,3,1) IN ('0','1','2','3','4','5','6','7','8','9')) AND 
+(SUBSTRING(VALUE,4,1) IN ('0','1','2','3','4','5','6','7','8','9'))
+);
+--  or using regular expression pattern matching
+--  CREATE DOMAIN StoreCodes AS CHAR(4)
+--  CHECK( 
+--       VALUE ~ '^[FSB]\d{3}$'
+--       );
+
+CREATE DOMAIN CalVal AS INT
+CHECK(VALUE >0 AND VALUE <=10000);
+
+
+CREATE DOMAIN FeedQuantities AS INT
+CHECK(VALUE >0 AND VALUE <=50);
+
+
+
+
