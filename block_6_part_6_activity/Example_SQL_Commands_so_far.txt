@@ -1,0 +1,29 @@
+SELECT 2, 2+3, 'a string', UPPER('big words') || LOWER('LITTLE WORDS');
+
+SELECT 2 AS the_value_two,
+2+3 AS an_expression,
+'a string' AS some_text,
+UPPER('big words') || LOWER('LITTLE WORDS') AS a_text_expression;
+
+SELECT name, UPPER(capital) FROM country;
+
+SELECT name, UPPER(capital) AS capital_city FROM country;
+
+SELECT country FROM commission;
+
+SELECT DISTINCT country FROM commission; --We avoid duplicates with the keyword distinct
+
+(SELECT DISTINCT name FROM country) INTERSECT (SELECT DISTINCT country FROM commission);
+
+(SELECT name FROM country) UNION (SELECT country FROM commission)
+ORDER BY name ASC;
+
+(SELECT country FROM commission) EXCEPT (SELECT name FROM country);
+
+(SELECT name FROM country) EXCEPT (SELECT country FROM commission);
+
+SELECT country FROM commission WHERE commission.president = 'Jean Rey';
+
+SELECT DISTINCT commission.president, commission.country, country.capital 
+FROM country, commission 
+WHERE commission.country = country.name;

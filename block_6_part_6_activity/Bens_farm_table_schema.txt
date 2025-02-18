@@ -68,3 +68,110 @@ CREATE TABLE feeds(
 	-- foreign key to feeding session not declared yet
 );
 
+-- Create the table feedingsession
+CREATE TABLE feedingsession(
+	date DATE,
+	time TIME,
+	locationcode LocCodes, -- NOT NULL not needed, it is a primary key
+	PRIMARY KEY(date, time, locationcode),
+	duration TimePeriod,
+	weather WeatherDesc,
+	employeeid EmpIDs NOT NULL,
+	-- OccursAt, mandatory participation
+	CONSTRAINT occurs_at FOREIGN KEY (locationcode) REFERENCES location,
+	-- Supervises, mandatory participation
+	-- employeeid is not null in feedingsession
+	CONSTRAINT supervises FOREIGN KEY (employeeid) REFERENCES staffmember(employeeid),
+	/* 
+		relationship Feeds, mandatory participation
+		WARNING - Feeds mandatory participation
+		constraint has not been implemented.
+		This omission permits the entry of a row that
+		does not match a related Feeds record.
+	*/
+	-- CONSTRAINT feeds CHECK ((date, time, locationcode) IN (SELECT date, time, locationcode FROM feeds)),
+
+	-- feeding session is a historic record after 31 May 2002
+	CONSTRAINT feeding_session_date_is_historic CHECK ((date <= CURRENT_DATE) AND (date >= '2002-05-31'))
+);
+
+-- Add the feeds constraint to the feedingsession table
+/*
+	relationship Feeds, foreign key to feedingsession
+	note that using ALTER TABLE like this has separated the
+	full relation-for-relation pair of foreign keys,
+	so makes interpretetion harder
+*/
+ALTER TABLE feeds
+	ADD CONSTRAINT feeds2 FOREIGN KEY (date, time, locationcode)
+	REFERENCES feedingsession;
+
+-- Alternatively
+CREATE TABLE feeds(
+	date DATE,
+	time TIME,
+	locationcode LocCodes,
+	idtagcode Tags,
+	PRIMARY KEY(date, time, locationcode, idtagcode)
+);
+
+CREATE TABLE feedingsession(
+	date DATE,
+	time TIME,
+	locationcode LocCodes,
+	PRIMARY KEY(date, time, locationcode),
+	employeeid EmpIDs NOT NULL,
+	duration TimePeriod,
+	weather WeatherDesc,
+	-- feeding session is a historic record and after 31 May 2002
+	CONSTRAINT feeding_session_is_historic
+		CHECK ((date <= CURRENT_DATE) AND (date >= '2002-05-31'))
+);
+
+-- relationship Feeds, foreign keys to FeedingSession and Animal
+-- mandatory participation of FeedingSession
+-- Note that here, all the constraints related related to the Feeds
+-- different CREATE TABLE statements, making the Feeds relationship
+-- easier to identify
+ALTER TABLE feeds
+	ADD CONSTRAINT feeds1 FOREIGN KEY (idtagcode) REFERENCES animal,
+	ADD CONSTRAINT feeds2 FOREIGN KEY (date, time, locationcode) REFERENCES feedingsession;
+
+-- relationship Feeds, mandatory participation of FeedingSession
+-- WARNING - the Feeds mandatory participation
+-- constraint has not been implemented
+-- This omission permits the entry of a row that does not match a related Feeds record.
+-- ADD CONSTRAINT feeds_mand CHECK ((date, time, locationcode) IN (SELECT date, time, locationcode FROM feeds));
+
+-- relationship OccursAt, mandatory participation
+-- locationcode is not null in feedingsession
+ALTER TABLE feedingsession
+	ADD CONSTRAINT occurs_at FOREIGN KEY (locationcode) REFERENCES location;
+
+-- relationship supervises, mandatory participation
+-- employeeID is not null in feedingsession
+ALTER TABLE feedingsession
+	ADD CONSTRAINT supervises FOREIGN KEY (employeeid) REFERENCES staffmember(employeeid);
+
+-- Create feedstuff relationship
+CREATE TABLE feedstuff(
+	feedcode FeedCodes,
+	PRIMARY KEY (feedcode),
+	descriptio FreeText,
+	calorificvalue CalVal,
+	preparation FreeText,
+	storecode StoreCodes
+);
+
+-- Serving relation
+CREATE TABLE serving(
+	date DATE,
+	time TIME,
+	locationcode LocCodes,
+	feedcode FeedCodes,
+	PRIMARY KEY(date, time, locationcode,feedcode),
+	quantity FeedQuantities,
+	CONSTRAINT contains FOREIGN KEY(feedcode) REFERENCES feedstuff,
+	CONSTRAINT serves FOREIGN KEY(date, time, locationcode) REFERENCES feedingsession
+);
+
