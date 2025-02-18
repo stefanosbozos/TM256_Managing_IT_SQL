@@ -1,0 +1,40 @@
+-- Update the numbe of cars for the country Portugal in the table country.
+UPDATE country
+SET cars = 314
+WHERE name = 'Portugal';
+
+-- Update by +10% and +5% for all the gdp and population values respectively in the table country.
+UPDATE country
+SET (gdp, population) = (((gdp * 110)/100), ((population * 105 / 100)));
+
+
+UPDATE country
+SET population = (
+	SELECT population
+	FROM population
+	WHERE ((country.name = population.country) AND (yr = 2010))
+);
+
+UPDATE test
+SET b = NULL;
+
+-- NULL needs IS!!!
+UPDATE test
+SET c = 77
+WHERE (test.c IS NULL);
+
+DELETE FROM test;
+
+-- Part 8 --
+
+-- COUNT 
+SELECT COUNT(*) FROM country;
+
+SELECT COUNT(*) FROM country WHERE area < 100.0;
+
+SELECT MIN(gdp) FROM country;
+
+SELECT COUNT(DISTINCT yr) FROM population;
+
+SELECT MAX(gdp) - MIN(gdp) AS gdp_difference
+FROM country;
